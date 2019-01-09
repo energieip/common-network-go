@@ -60,10 +60,11 @@ func (p *MQTTNetwork) Disconnect() {
 func (p *MQTTNetwork) Initialize(config NetworkConfig) error {
 	rlog.Info("Plug on MQTT " + config.IP + ":" + config.Port)
 	p.callbacks = config.Callbacks
+	var url string
 	if config.ServerCertificat != "" {
-		url := "tcps://" + config.IP + ":" + config.Port
+		url = "tcps://" + config.IP + ":" + config.Port
 	} else {
-		url := "tcp://" + config.IP + ":" + config.Port
+		url = "tcp://" + config.IP + ":" + config.Port
 	}
 	opts := mqtt.NewClientOptions().AddBroker(url).SetClientID(config.ClientName)
 	if config.User != "" {
