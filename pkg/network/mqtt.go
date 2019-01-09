@@ -1,6 +1,7 @@
 package network
 
 import (
+	"crypto/tls"
 	"log"
 	"os"
 	"time"
@@ -59,8 +60,22 @@ func (p *MQTTNetwork) Disconnect() {
 func (p *MQTTNetwork) Initialize(config NetworkConfig) error {
 	rlog.Info("Plug on MQTT " + config.IP + ":" + config.Port)
 	p.callbacks = config.Callbacks
-	url := "tcp://" + config.IP + ":" + config.Port
+	if config.ServerCertificat != "" {
+		url := "tcps://" + config.IP + ":" + config.Port
+	} else {
+		url := "tcp://" + config.IP + ":" + config.Port
+	}
 	opts := mqtt.NewClientOptions().AddBroker(url).SetClientID(config.ClientName)
+	if config.User != "" {
+		opts.SetUsername(config.User)
+	}
+	if config.Password != "" {
+		opts.SetPassword(config.Password)
+	}
+	if config.ServerCertificat != "" && config.ClientKey != "" {
+		cer, _ := tls.LoadX509KeyPair(config.ServerCertificat, config.ClientKey)
+		opts.SetTLSConfig(&tls.Config{Certificates: []tls.Certificate{cer}, InsecureSkipVerify: true})
+	}
 	switch config.LogLevel {
 	case LogDebug:
 		mqtt.DEBUG = log.New(os.Stdout, "DBG", 0)

@@ -44,7 +44,6 @@ type NetworkConfig struct {
 	User             string //for authentification
 	Password         string
 	ServerCertificat string
-	ClientCertificat string
 	ClientKey        string
 }
 
